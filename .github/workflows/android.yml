@@ -18,13 +18,22 @@ jobs:
 
       - name: Find and extract Android project ZIP
         run: |
-          ZIP_FILE=$(find . -maxdepth 2 -name "*.zip" | head -n 1)
+          sudo apt-get update
+          sudo apt-get install -y p7zip-full
+
+          ZIP_FILE=$(find . -maxdepth 4 -type f -name "*.zip" | head -n 1)
+
           if [ -z "$ZIP_FILE" ]; then
             echo "Project ZIP not found"
             exit 1
           fi
-          mkdir project
-          unzip "$ZIP_FILE" -d project
+
+          mkdir -p project
+          7z x "$ZIP_FILE" -oproject -y
+
+          echo "ZIP extraction completed"
+          ls -la project
+          
 
       - name: Set up Java
         uses: actions/setup-java@v4
