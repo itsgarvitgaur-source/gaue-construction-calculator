@@ -47,11 +47,20 @@ jobs:
       - name: Build APK
         run: |
           PROJECT_DIR=$(find project -name settings.gradle.kts -printf '%h\n' | head -n 1)
-          if [ -z "$PROJECT_DIR" ]; then
-            echo "Android project not found"
-            exit 1
-          fi
+
+          keytool -genkeypair \
+            -v \
+            -keystore "$PROJECT_DIR/debug.keystore" \
+            -storepass android \
+            -alias androiddebugkey \
+            -keypass android \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -dname "CN=Android Debug,O=Android,C=US"
+
           gradle -p "$PROJECT_DIR" assembleDebug
+          
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
